@@ -1,13 +1,15 @@
 ﻿using CoreRCON;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using TheFipster.Rcon.Api.Abstractions;
 using TheFipster.Rcon.Api.Exceptions;
 using TheFipster.Rcon.Api.Models.Config;
 
-namespace TheFipster.Rcon.Api.Services
+namespace TheFipster.Rcon.Api.Components
 {
     public class RconClient : IRconClient
     {
@@ -22,8 +24,35 @@ namespace TheFipster.Rcon.Api.Services
 
         public async Task<string> ExecuteAsync(string command)
         {
-            await _client.ConnectAsync();
-            return await _client.SendCommandAsync(command);
+            try
+            {
+                await _client.ConnectAsync();
+                return await _client.SendCommandAsync(command);
+            }
+            catch (SocketException socketEx)
+            {
+                throw new RconHostException("RCON host is not responding.", socketEx);
+            }
+        }
+
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
+        {
+            var results = new List<string>();
+            try
+            {
+                await _client.ConnectAsync();
+                foreach (var command in commands)
+                {
+                    var result = await _client.SendCommandAsync(command);
+                    results.Add(result);
+                }
+            }
+            catch (SocketException socketEx)
+            {
+                throw new RconHostException("RCON host is not responding.", socketEx);
+            }
+
+            return results;
         }
 
         private RCON SetupRcon()
@@ -33,7 +62,7 @@ namespace TheFipster.Rcon.Api.Services
             if (!IPAddress.TryParse(address, out var ipAddress))
             {
                 var resolvedAddresses = Dns.GetHostAddresses(_settings.Host.Address);
-                if (resolvedAddresses.Count() == 0)
+                if (resolvedAddresses.Length == 0)
                     throw new RconAddressException($"Rcon Address '{address}' couldn't be resolved to an ip address.");
 
                 ipAddress = resolvedAddresses.First();

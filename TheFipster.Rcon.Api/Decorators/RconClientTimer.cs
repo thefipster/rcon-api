@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using TheFipster.Rcon.Api.Abstractions;
@@ -21,6 +22,16 @@ namespace TheFipster.Rcon.Api.Decorators
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var result = await _component.ExecuteAsync(command);
+            stopwatch.Stop();
+            _logger.LogTrace($"IRconClient.ExecuteAsync took {stopwatch.ElapsedMilliseconds} ms.");
+            return result;
+        }
+
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var result = await _component.ExecuteAsync(commands);
             stopwatch.Stop();
             _logger.LogTrace($"IRconClient.ExecuteAsync took {stopwatch.ElapsedMilliseconds} ms.");
             return result;

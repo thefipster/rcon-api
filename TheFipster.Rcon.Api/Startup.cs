@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using SimpleInjector;
 using System;
 using System.IO;
 using System.Reflection;
 using TheFipster.Rcon.Api.Abstractions;
+using TheFipster.Rcon.Api.Components;
 using TheFipster.Rcon.Api.Decorators;
 using TheFipster.Rcon.Api.Models.Config;
-using TheFipster.Rcon.Api.Services;
+using TheFipster.Rcon.Api.Repository;
 
 namespace TheFipster.Rcon.Api
 {
@@ -28,7 +29,9 @@ namespace TheFipster.Rcon.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RconSettings>(_configuration.GetSection("Rcon"));
+            services.Configure<RconSettings>(_configuration.GetSection(RconSettings.SettingsKey));
+            services.Configure<StorageSettings>(_configuration.GetSection(StorageSettings.SettingsKey));
+
             services.AddControllers();
 
             services.AddSimpleInjector(_container, options =>
@@ -38,6 +41,8 @@ namespace TheFipster.Rcon.Api
             });
 
             ConfigureContainer();
+
+            services.AddHealthChecks();
 
             services.AddSwaggerGen(c =>
             {
@@ -58,22 +63,25 @@ namespace TheFipster.Rcon.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddQuartz();
         }
 
         private void ConfigureContainer()
         {
+            _container.Register<IStorageProvider, StorageProvider>(Lifestyle.Singleton);
+            _container.Register<IHistoryStore, HistoryStore>(Lifestyle.Scoped);
+            _container.Register<ICronJobStore, CronJobStore>(Lifestyle.Scoped);
+
             _container.Register<IRconClient, RconClient>(Lifestyle.Scoped);
             _container.RegisterDecorator<IRconClient, RconClientTimer>(Lifestyle.Scoped);
+            _container.RegisterDecorator<IRconClient, RconClientHistoryRecorder>(Lifestyle.Scoped);
             _container.RegisterDecorator<IRconClient, RconClientLogger>(Lifestyle.Scoped);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseExceptionHandler("/error");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -86,6 +94,7 @@ namespace TheFipster.Rcon.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }
