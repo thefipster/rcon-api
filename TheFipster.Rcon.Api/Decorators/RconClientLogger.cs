@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TheFipster.Rcon.Api.Abstractions;
 
@@ -20,6 +21,14 @@ namespace TheFipster.Rcon.Api.Decorators
             _logger.LogTrace($"Entering IRconClient.ExecuteAsync with Command '{command}'.");
             var result = await _component.ExecuteAsync(command);
             _logger.LogTrace($"Leaving IRconClient.ExecuteAsync with Result '{result}'.");
+            return result;
+        }
+
+        public async Task<List<string>> ExecuteAsync(List<string> commands)
+        {
+            _logger.LogTrace($"Entering IRconClient.ExecuteAsync with Commands '{string.Join(", ", commands)}'.");
+            var result = await _component.ExecuteAsync(commands);
+            _logger.LogTrace($"Leaving IRconClient.ExecuteAsync with Result '{string.Join(", ", result)}'.");
             return result;
         }
     }

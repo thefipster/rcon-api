@@ -38,8 +38,7 @@ namespace TheFipster.Rcon.Api
 
             ConfigureContainer();
 
-            services.AddHealthChecks()
-                    .AddCheck<RconHealthCheck>("RCON Check");
+            services.AddHealthChecks();
 
             services.AddSwaggerGen(c =>
             {
