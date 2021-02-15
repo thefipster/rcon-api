@@ -10,6 +10,7 @@ using System.Reflection;
 using TheFipster.Rcon.Api.Abstractions;
 using TheFipster.Rcon.Api.Decorators;
 using TheFipster.Rcon.Api.Models.Config;
+using TheFipster.Rcon.Api.Repository;
 using TheFipster.Rcon.Api.Services;
 
 namespace TheFipster.Rcon.Api
@@ -27,7 +28,9 @@ namespace TheFipster.Rcon.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RconSettings>(_configuration.GetSection("Rcon"));
+            services.Configure<RconSettings>(_configuration.GetSection(RconSettings.SettingsKey));
+            services.Configure<StorageSettings>(_configuration.GetSection(StorageSettings.SettingsKey));
+
             services.AddControllers();
 
             services.AddSimpleInjector(_container, options =>
@@ -63,8 +66,12 @@ namespace TheFipster.Rcon.Api
 
         private void ConfigureContainer()
         {
+            _container.Register<IStorageProvider, StorageProvider>(Lifestyle.Singleton);
+            _container.Register<IHistoryStore, HistoryStore>(Lifestyle.Scoped);
+
             _container.Register<IRconClient, RconClient>(Lifestyle.Scoped);
             _container.RegisterDecorator<IRconClient, RconClientTimer>(Lifestyle.Scoped);
+            _container.RegisterDecorator<IRconClient, RconClientHistoryRecorder>(Lifestyle.Scoped);
             _container.RegisterDecorator<IRconClient, RconClientLogger>(Lifestyle.Scoped);
         }
 

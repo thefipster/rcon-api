@@ -2,6 +2,8 @@
 {
     public class RconSettings
     {
+        public const string SettingsKey = "Rcon";
+
         public RconHostSettings Host { get; set; }
     }
 
