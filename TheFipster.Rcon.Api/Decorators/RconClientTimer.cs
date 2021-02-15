@@ -27,7 +27,7 @@ namespace TheFipster.Rcon.Api.Decorators
             return result;
         }
 
-        public async Task<List<string>> ExecuteAsync(List<string> commands)
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();

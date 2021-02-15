@@ -9,7 +9,7 @@ using TheFipster.Rcon.Api.Abstractions;
 using TheFipster.Rcon.Api.Exceptions;
 using TheFipster.Rcon.Api.Models.Config;
 
-namespace TheFipster.Rcon.Api.Services
+namespace TheFipster.Rcon.Api.Components
 {
     public class RconClient : IRconClient
     {
@@ -35,7 +35,7 @@ namespace TheFipster.Rcon.Api.Services
             }
         }
 
-        public async Task<List<string>> ExecuteAsync(List<string> commands)
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
         {
             var results = new List<string>();
             try

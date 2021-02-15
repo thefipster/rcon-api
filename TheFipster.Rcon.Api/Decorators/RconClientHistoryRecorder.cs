@@ -27,13 +27,13 @@ namespace TheFipster.Rcon.Api.Decorators
             return result;
         }
 
-        public async Task<List<string>> ExecuteAsync(List<string> commands)
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
         {
             var results = await _component.ExecuteAsync(commands);
 
             for (int i = 0; i < commands.Count(); i++)
             {
-                var entry = new History(commands[i], results[i]);
+                var entry = new History(commands.ElementAt(i), results.ElementAt(i));
                 _store.Insert(entry);
             }
 

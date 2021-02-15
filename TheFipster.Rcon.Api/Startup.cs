@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using SimpleInjector;
 using System;
 using System.IO;
 using System.Reflection;
 using TheFipster.Rcon.Api.Abstractions;
+using TheFipster.Rcon.Api.Components;
 using TheFipster.Rcon.Api.Decorators;
 using TheFipster.Rcon.Api.Models.Config;
 using TheFipster.Rcon.Api.Repository;
-using TheFipster.Rcon.Api.Services;
 
 namespace TheFipster.Rcon.Api
 {
@@ -62,12 +63,15 @@ namespace TheFipster.Rcon.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddQuartz();
         }
 
         private void ConfigureContainer()
         {
             _container.Register<IStorageProvider, StorageProvider>(Lifestyle.Singleton);
             _container.Register<IHistoryStore, HistoryStore>(Lifestyle.Scoped);
+            _container.Register<ICronJobStore, CronJobStore>(Lifestyle.Scoped);
 
             _container.Register<IRconClient, RconClient>(Lifestyle.Scoped);
             _container.RegisterDecorator<IRconClient, RconClientTimer>(Lifestyle.Scoped);
@@ -77,11 +81,6 @@ namespace TheFipster.Rcon.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-
             app.UseExceptionHandler("/error");
             app.UseSwagger();
             app.UseSwaggerUI(c =>

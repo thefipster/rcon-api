@@ -43,7 +43,7 @@ namespace TheFipster.Rcon.Api.Controllers
         /// <param name="commands">These commands will be send to the server and executed sequentially.</param>
         /// <returns>These are the answers of the server in the same order as they were sent.</returns>
         [HttpPost("bulk")]
-        public async Task<List<string>> PostBulkAsync([FromBody] List<string> commands)
+        public async Task<ICollection<string>> PostBulkAsync([FromBody] ICollection<string> commands)
             => await _rconClient.ExecuteAsync(commands);
     }
 }

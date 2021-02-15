@@ -24,7 +24,7 @@ namespace TheFipster.Rcon.Api.Decorators
             return result;
         }
 
-        public async Task<List<string>> ExecuteAsync(List<string> commands)
+        public async Task<ICollection<string>> ExecuteAsync(ICollection<string> commands)
         {
             _logger.LogTrace($"Entering IRconClient.ExecuteAsync with Commands '{string.Join(", ", commands)}'.");
             var result = await _component.ExecuteAsync(commands);

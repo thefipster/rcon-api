@@ -10,9 +10,7 @@ namespace TheFipster.Rcon.Api.Repository
         private readonly ILiteCollection<History> _collection;
 
         public HistoryStore(IStorageProvider storageProvider)
-        {
-            _collection = storageProvider.GetCollection<History>();
-        }
+            => _collection = storageProvider.GetCollection<History>();
 
         public void Insert(History entry)
             => _collection.Insert(entry);

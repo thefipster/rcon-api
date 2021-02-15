@@ -6,6 +6,6 @@ namespace TheFipster.Rcon.Api.Abstractions
     public interface IRconClient
     {
         Task<string> ExecuteAsync(string command);
-        Task<List<string>> ExecuteAsync(List<string> commands);
+        Task<ICollection<string>> ExecuteAsync(ICollection<string> commands);
     }
 }

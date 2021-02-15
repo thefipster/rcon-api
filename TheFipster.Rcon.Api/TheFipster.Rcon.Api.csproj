@@ -16,6 +16,10 @@
     <PackageReference Include="LiteDB" Version="5.0.10" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="5.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="Quartz" Version="3.2.4" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.2.4" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.2.4" />
+    <PackageReference Include="Quartz.Jobs" Version="3.2.4" />
     <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc" Version="5.1.1" />
     <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc.Core" Version="5.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
