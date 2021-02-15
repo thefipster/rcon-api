@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using TheFipster.Rcon.Api.Abstractions;
 using TheFipster.Rcon.Api.Exceptions;
@@ -22,8 +23,15 @@ namespace TheFipster.Rcon.Api.Services
 
         public async Task<string> ExecuteAsync(string command)
         {
-            await _client.ConnectAsync();
-            return await _client.SendCommandAsync(command);
+            try
+            {
+                await _client.ConnectAsync();
+                return await _client.SendCommandAsync(command);
+            }
+            catch (SocketException socketEx)
+            {
+                throw new RconHostException("RCON host is not responding.", socketEx);
+            }
         }
 
         private RCON SetupRcon()

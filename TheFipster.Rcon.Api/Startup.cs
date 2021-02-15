@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SimpleInjector;
 using System;
@@ -39,6 +38,9 @@ namespace TheFipster.Rcon.Api
 
             ConfigureContainer();
 
+            services.AddHealthChecks()
+                    .AddCheck<RconHealthCheck>("RCON Check");
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -69,11 +71,12 @@ namespace TheFipster.Rcon.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
 
+            app.UseExceptionHandler("/error");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -86,6 +89,7 @@ namespace TheFipster.Rcon.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }
