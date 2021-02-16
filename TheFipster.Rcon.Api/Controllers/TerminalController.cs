@@ -8,7 +8,7 @@ using TheFipster.Rcon.Api.Repository.Models;
 namespace TheFipster.Rcon.Api.Controllers
 {
     [ApiController]
-    [Route("terminal")]
+    [Route("api/terminal")]
     public class TerminalController : ControllerBase
     {
         private readonly IRconClient _rconClient;

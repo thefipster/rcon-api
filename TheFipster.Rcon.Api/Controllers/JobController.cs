@@ -9,7 +9,7 @@ using TheFipster.Rcon.Api.Repository.Models;
 
 namespace TheFipster.Rcon.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/jobs")]
     [ApiController]
     public class JobController : ControllerBase
     {
@@ -31,9 +31,9 @@ namespace TheFipster.Rcon.Api.Controllers
         public IActionResult PostNewJob([FromBody] NewJobRequest request)
         {
             if (!CronExpression.IsValidExpression(request.CronExpression))
-                throw new ArgumentException("Cron Expression is not valid.", nameof(NewJobRequest.CronExpression));
+                throw new ArgumentException("Cron Expression is not valid.", nameof(request.CronExpression));
 
-            if (request.Commands.Count() == 0 || request.Commands.Any(x => string.IsNullOrWhiteSpace(x)))
+            if (request.Commands.Count == 0 || request.Commands.Any(x => string.IsNullOrWhiteSpace(x)))
                 throw new ArgumentException("Commands are empty or consist only out of whitespace.");
 
             var job = new CronJob(request.CronExpression, request.Commands);

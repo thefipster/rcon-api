@@ -89,7 +89,6 @@ namespace TheFipster.Rcon.Api
                 c.RoutePrefix = string.Empty;
             });
 
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
