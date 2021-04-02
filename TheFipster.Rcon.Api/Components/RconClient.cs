@@ -62,10 +62,11 @@ namespace TheFipster.Rcon.Api.Components
             if (!IPAddress.TryParse(address, out var ipAddress))
             {
                 var resolvedAddresses = Dns.GetHostAddresses(_settings.Host.Address);
-                if (resolvedAddresses.Length == 0)
+                var ipv4Addresses = resolvedAddresses.Where(x => x.AddressFamily == AddressFamily.InterNetwork);
+                if (ipv4Addresses.Count() == 0)
                     throw new RconAddressException($"Rcon Address '{address}' couldn't be resolved to an ip address.");
 
-                ipAddress = resolvedAddresses.First();
+                ipAddress = ipv4Addresses.First();
             }
 
             return new RCON(ipAddress, (ushort)_settings.Host.Port, _settings.Host.Password);
